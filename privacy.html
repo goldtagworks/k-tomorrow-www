@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <title>k-tomorrow | 한국어 학습으로 내일의 기회를 설계하다</title>
+    <meta name="description"
+        content="k-tomorrow는 한국어 학습자를 위한 구조화된 온라인 LMS입니다. 레벨별 커리큘럼, 실시간 피드백, 실전 활용 중심 학습으로 글로벌 기회를 준비하세요." />
+    <link rel="canonical" href="https://k-tomorrow.com/" />
+    <meta name="theme-color" content="#3b82f6" />
+
+    <!-- OG / Twitter -->
+    <meta property="og:title" content="k-tomorrow | Learn Korean. Design Your Tomorrow." />
+    <meta property="og:description" content="구조화된 경로 · 데이터 기반 피드백 · 실전 활용 중심 한국어 학습 플랫폼" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://k-tomorrow.com/" />
+    <meta property="og:image" content="https://k-tomorrow.com/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- JSON-LD (Organization) -->
+    <script type="application/ld+json">
+    {
+        "@context":"https://schema.org",
+        "@type":"Organization",
+        "name":"k-tomorrow",
+        "url":"https://k-tomorrow.com/",
+        "logo":"https://k-tomorrow.com/logo.svg",
+        "description":"한국어 학습을 통해 학습자 개인의 내일을 설계하도록 돕는 온라인 학습(LMS) 플랫폼",
+        "sameAs":["https://x.com/ktomorrow","https://www.linkedin.com/company/ktomorrow"],
+        "foundingDate":"2025",
+        "foundingLocation":"Seoul, Korea"
+    }
+  </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fadeIn': 'fadeIn 0.8s ease-out forwards'
+                    },
+                    keyframes: {
+                        float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-14px)' } },
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(12px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/site.css" />
+</head>
+
+<body class="antialiased text-gray-800 bg-white">
+    <!-- 스킵 링크 -->
+    <a href="#main"
+        class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 bg-black text-white px-3 py-2 rounded">본문으로
+        건너뛰기</a>
+
+    <!-- 간소화 헤더 (법률 문서 전용) -->
+    <header class="site-header fixed top-0 inset-x-0 z-50 bg-white/85 backdrop-blur border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2" aria-label="홈으로 이동">
+                <img src="/logo.svg" alt="" aria-hidden="true" class="w-6 h-6" />
+                <span class="font-semibold text-sm sm:text-base">k-tomorrow</span>
+            </a>
+            <nav class="flex items-center gap-5 text-xs sm:text-sm" aria-label="보조 메뉴">
+                <a href="/#contact" class="text-gray-600 hover:text-gray-900">문의</a>
+                <a href="/" class="text-gray-600 hover:text-gray-900">홈</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        <!-- 헤더 -->
+        <section class="bg-gray-50 border-b border-gray-200">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <h1 class="text-3xl font-extrabold text-gray-900">개인정보처리방침</h1>
+                <p class="mt-2 text-gray-600">마지막 업데이트: <time datetime="2025-07-01">2025-07-01</time></p>
+            </div>
+        </section>
+
+        <!-- 본문 (MDX 원문 충실 반영) -->
+        <section class="py-16">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- 목차 -->
+                <nav class="mb-10 rounded-2xl border border-gray-200 bg-white p-6">
+                    <h2 class="text-lg font-semibold">목차</h2>
+                    <ol class="mt-3 list-decimal list-inside space-y-2 text-gray-700">
+                        <li><a href="#article-1" class="text-blue-600 hover:underline">제1조 개인정보 수집 항목 및 방법</a></li>
+                        <li><a href="#article-2" class="text-blue-600 hover:underline">제2조 개인정보의 수집 및 이용 목적</a></li>
+                        <li><a href="#article-3" class="text-blue-600 hover:underline">제3조 개인정보의 보유 및 이용 기간</a></li>
+                        <li><a href="#article-4" class="text-blue-600 hover:underline">제4조 개인정보의 제3자 제공</a></li>
+                        <li><a href="#article-5" class="text-blue-600 hover:underline">제5조 개인정보 처리 위탁</a></li>
+                        <li><a href="#article-6" class="text-blue-600 hover:underline">제6조 이용자의 권리와 행사 방법</a></li>
+                        <li><a href="#article-7" class="text-blue-600 hover:underline">제7조 개인정보 파기 절차 및 방법</a></li>
+                        <li><a href="#article-8" class="text-blue-600 hover:underline">제8조 개인정보의 안전성 확보조치</a></li>
+                        <li><a href="#article-9" class="text-blue-600 hover:underline">제9조 개인정보 보호책임자 및 담당부서</a></li>
+                        <li><a href="#article-10" class="text-blue-600 hover:underline">제10조 개정 전 고지의무</a></li>
+                    </ol>
+                </nav>
+
+                <article class="prose prose-gray max-w-none markdown">
+                    <p>k-tomorrow 은(는) 개인정보 보호법 등 관련 법령상의 개인정보 보호 규정을 준수하며, 이용자의 개인정보 보호에 최선을 다하고 있습니다. 본 개인정보 처리방침은 회사가
+                        운영하는 서비스에서 수집하는 개인정보 항목, 이용 목적, 보관 기간 등에 대해 안내합니다.</p>
+                    <br />
+                    <br />
+
+                    <blockquote>
+                        <p>본 방침은 2025년 7월 1일부터 시행됩니다.</p>
+                    </blockquote>
+                    <hr />
+
+                    <!-- 제1조 -->
+                    <h2 id="article-1">제1조 (개인정보 수집 항목 및 방법)<a href="#article-1" class="heading-anchor"
+                            aria-label="제1조 링크">#</a></h2>
+                    <p>회사는 다음과 같은 개인정보를 수집할 수 있습니다:</p>
+                    <h3>1. 수집 항목</h3>
+                    <ul>
+                        <li>필수 항목: 이름, 이메일, 비밀번호, 서비스 이용기록, 접속 IP, 쿠키</li>
+                        <li>선택 항목: 닉네임, 프로필 사진, 전화번호, 주소</li>
+                    </ul>
+                    <h3>2. 수집 방법</h3>
+                    <ul>
+                        <li>회원가입 및 서비스 이용 시 웹/모바일 화면을 통해 직접 입력</li>
+                        <li>고객센터 상담, 이벤트 응모, 로그 분석 도구(Google Analytics 등)</li>
+                    </ul>
+                    <hr />
+
+                    <!-- 제2조 -->
+                    <h2 id="article-2">제2조 (개인정보의 수집 및 이용 목적)<a href="#article-2" class="heading-anchor"
+                            aria-label="제2조 링크">#</a></h2>
+                    <p>회사는 수집한 개인정보를 다음의 목적에 따라 이용합니다:</p>
+                    <ul>
+                        <li>회원 관리: 가입 확인, 본인 인증, 공지사항 전달</li>
+                        <li>서비스 제공: 콘텐츠 추천, 맞춤형 서비스 제공</li>
+                        <li>고객 지원: 문의사항 응대, 문제 해결</li>
+                        <li>마케팅 및 광고: 뉴스레터 발송, 이벤트 안내 (사전 동의 시)</li>
+                    </ul>
+                    <hr />
+
+                    <!-- 제3조 -->
+                    <h2 id="article-3">제3조 (개인정보의 보유 및 이용 기간)<a href="#article-3" class="heading-anchor"
+                            aria-label="제3조 링크">#</a></h2>
+                    <p>회사는 개인정보를 수집·이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관계 법령에 따라 보관이 필요한 경우에는 일정 기간 보관할 수 있습니다.</p>
+                    <div class="overflow-x-auto not-prose my-4">
+                        <table class="min-w-full text-sm border border-gray-200">
+                            <caption class="sr-only">법령에 따른 개인정보 보존 항목 및 기간</caption>
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-3 py-2 text-left border-b">보존 항목</th>
+                                    <th scope="col" class="px-3 py-2 text-left border-b">보존 기간</th>
+                                    <th scope="col" class="px-3 py-2 text-left border-b">보존 근거</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3 py-2 border-b">계약 또는 청약철회 기록</td>
+                                    <td class="px-3 py-2 border-b">5년</td>
+                                    <td class="px-3 py-2 border-b">전자상거래 등 소비자보호에 관한 법률</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 border-b">대금 결제 및 재화 공급 기록</td>
+                                    <td class="px-3 py-2 border-b">5년</td>
+                                    <td class="px-3 py-2 border-b">전자상거래 등 소비자보호에 관한 법률</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 border-b">소비자 불만 또는 분쟁처리</td>
+                                    <td class="px-3 py-2 border-b">3년</td>
+                                    <td class="px-3 py-2 border-b">전자상거래 등 소비자보호에 관한 법률</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr />
+
+                    <!-- 제4조 -->
+                    <h2 id="article-4">제4조 (개인정보의 제3자 제공)<a href="#article-4" class="heading-anchor"
+                            aria-label="제4조 링크">#</a></h2>
+                    <p>회사는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 다만 다음의 경우에는 예외로 합니다:</p>
+                    <ul>
+                        <li>이용자가 사전에 동의한 경우</li>
+                        <li>법령에 따라 제공이 요구되는 경우 (예: 수사기관 요청)</li>
+                    </ul>
+                    <hr />
+
+                    <!-- 제5조 -->
+                    <h2 id="article-5">제5조 (개인정보 처리 위탁)<a href="#article-5" class="heading-anchor"
+                            aria-label="제5조 링크">#</a></h2>
+                    <p>회사는 서비스 향상을 위해 아래와 같이 개인정보 처리 업무를 외부 전문업체에 위탁할 수 있습니다.</p>
+                    <div class="overflow-x-auto not-prose my-4">
+                        <table class="min-w-full text-sm border border-gray-200">
+                            <caption class="sr-only">개인정보 처리 위탁 내역</caption>
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-3 py-2 text-left border-b">수탁업체</th>
+                                    <th scope="col" class="px-3 py-2 text-left border-b">위탁업무 내용</th>
+                                    <th scope="col" class="px-3 py-2 text-left border-b">보유 및 이용 기간</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3 py-2 border-b">NHN 클라우드</td>
+                                    <td class="px-3 py-2 border-b">클라우드 인프라 운영</td>
+                                    <td class="px-3 py-2 border-b">회원 탈퇴 시 또는 위탁 계약 종료 시까지</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-sm text-gray-500">※ 위탁업체가 변경될 경우, 본 방침을 통해 고지합니다.</p>
+                    <hr />
+
+                    <!-- 제6조 -->
+                    <h2 id="article-6">제6조 (이용자의 권리와 행사 방법)<a href="#article-6" class="heading-anchor"
+                            aria-label="제6조 링크">#</a></h2>
+                    <p>이용자는 다음과 같은 권리를 행사할 수 있습니다:</p>
+                    <ul>
+                        <li>개인정보 열람, 정정, 삭제 요청</li>
+                        <li>처리 정지 요청</li>
+                        <li>동의 철회 및 회원 탈퇴</li>
+                    </ul>
+                    <p>※ 관련 요청은 [고객센터 이메일] 또는 서비스 내 설정 메뉴를 통해 접수 가능합니다.</p>
+                    <hr />
+
+                    <!-- 제7조 -->
+                    <h2 id="article-7">제7조 (개인정보 파기 절차 및 방법)<a href="#article-7" class="heading-anchor"
+                            aria-label="제7조 링크">#</a></h2>
+                    <p>회사는 개인정보 보유 기간이 지나면 지체 없이 파기합니다.</p>
+                    <ul>
+                        <li>전자적 파일: 복구 불가능한 기술적 방법으로 삭제</li>
+                        <li>인쇄물: 분쇄 또는 소각</li>
+                    </ul>
+                    <hr />
+
+                    <!-- 제8조 -->
+                    <h2 id="article-8">제8조 (개인정보의 안전성 확보조치)<a href="#article-8" class="heading-anchor"
+                            aria-label="제8조 링크">#</a></h2>
+                    <p>회사는 다음과 같은 조치를 통해 개인정보를 안전하게 관리합니다:</p>
+                    <ul>
+                        <li>개인정보 암호화</li>
+                        <li>접근권한 최소화 및 관리</li>
+                        <li>보안 프로그램 설치 및 정기 점검</li>
+                        <li>물리적 보관 장소 접근통제</li>
+                    </ul>
+                    <hr />
+
+                    <!-- 제9조 -->
+                    <h2 id="article-9">제9조 (개인정보 보호책임자 및 담당부서)<a href="#article-9" class="heading-anchor"
+                            aria-label="제9조 링크">#</a></h2>
+                    <p>이용자는 개인정보 보호 관련 문의, 불만 처리 등을 아래 연락처로 할 수 있습니다:</p>
+                    <ul>
+                        <li><strong>개인정보 보호책임자</strong>: ian.lab</li>
+                        <li><strong>연락처</strong>: kr.lms.labs@gmail.com</li>
+                        <li><strong>담당 부서</strong>: 고객지원팀</li>
+                    </ul>
+                    <hr />
+
+                    <!-- 제10조 -->
+                    <h2 id="article-10">제10조 (개정 전 고지의무)<a href="#article-10" class="heading-anchor"
+                            aria-label="제10조 링크">#</a></h2>
+                    <p>본 개인정보 처리방침은 관련 법령 및 회사 정책에 따라 변경될 수 있으며, 변경 시 최소 7일 전 서비스 내 공지사항을 통해 고지합니다.</p>
+                    <hr />
+
+                    <blockquote>
+                        <p>최종 업데이트: 2025년 7월 1일</p>
+                    </blockquote>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-gray-200 py-10">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-sm text-gray-600 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© <span id="y"></span> k-tomorrow. All rights reserved.</p>
+            <div class="flex gap-4">
+                <a href="/terms.html" class="hover:text-gray-900">이용약관</a>
+                <a href="/privacy.html" class="hover:text-gray-900">개인정보처리방침</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('y').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>
