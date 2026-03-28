@@ -99,6 +99,15 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
+/* Noise texture overlay — premium paper feel */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9999;
+  pointer-events:none;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:200px 200px;
+}
+
 img{max-width:100%;height:auto;display:block}
 a{color:inherit}
 
@@ -229,12 +238,25 @@ a:focus:not(:focus-visible),button:focus:not(:focus-visible){outline:none}
 .zone-label--warm{color:var(--acc-700)}
 .zone-label--cool{color:var(--pri-700)}
 
-/* Keyword stacks */
+/* Keyword stacks — sequential highlight */
 .keyword-stack{list-style:none;padding:0;display:grid;gap:var(--s-2)}
 .keyword-stack li{
   font:700 clamp(1.3rem,2.6vw,2.4rem)/1.3 var(--f-display);
   color:var(--text);
+  position:relative;
 }
+/* Highlight sweep underline */
+.keyword-stack li::after{
+  content:'';position:absolute;left:0;bottom:-.1em;
+  width:0;height:3px;border-radius:2px;
+  transition:width .6s var(--ease-out);
+}
+.hero-zone--warm .keyword-stack li::after{background:var(--acc-400)}
+.hero-zone--cool .keyword-stack li::after{background:var(--pri-400)}
+
+.hero-zone.is-visible .keyword-stack li:nth-child(1)::after{width:100%;transition-delay:.3s}
+.hero-zone.is-visible .keyword-stack li:nth-child(2)::after{width:80%;transition-delay:.5s}
+.hero-zone.is-visible .keyword-stack li:nth-child(3)::after{width:60%;transition-delay:.7s}
 
 /* Center headline bridging zones */
 .hero-center{
@@ -292,6 +314,43 @@ a:focus:not(:focus-visible),button:focus:not(:focus-visible){outline:none}
   box-shadow:0 2px 14px rgba(27,58,92,.22);
 }
 .btn-submit:hover{opacity:.9}
+
+/* ═══════════════════════════════════════════════════════════
+   Language Ticker
+═══════════════════════════════════════════════════════════ */
+.lang-ticker{
+  overflow:hidden;
+  border-bottom:1px solid var(--line);
+  background:var(--pri-900);
+  padding:var(--s-3) 0;
+}
+.ticker-track{
+  display:flex;gap:var(--s-8);
+  animation:ticker 30s linear infinite;
+  width:max-content;
+}
+.ticker-track span{
+  font:500 .8125rem/1 var(--f-body);
+  color:rgba(255,255,255,.55);
+  white-space:nowrap;
+  letter-spacing:.03em;
+}
+.ticker-track .ticker-dot{
+  color:var(--acc-400);font-size:.5rem;
+  display:inline-flex;align-items:center;
+}
+
+@keyframes ticker{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+
+/* pause on hover */
+.lang-ticker:hover .ticker-track{animation-play-state:paused}
+
+@media(prefers-reduced-motion:reduce){
+  .ticker-track{animation:none}
+}
 
 /* ═══════════════════════════════════════════════════════════
    Trust Numbers — "Numbers That Breathe"
@@ -374,6 +433,24 @@ a:focus:not(:focus-visible),button:focus:not(:focus-visible){outline:none}
 }
 .mc-block p{color:var(--text-2);line-height:1.8}
 
+/* Image bleed treatment */
+.mc-img-wrap{
+  border-radius:var(--r-lg);overflow:hidden;
+  margin-bottom:var(--s-6);
+  box-shadow:0 10px 40px rgba(26,24,21,.12);
+  position:relative;
+}
+.mc-img-wrap::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg, transparent 60%, rgba(26,24,21,.08) 100%);
+  pointer-events:none;
+}
+.mc-img-wrap img{
+  width:100%;display:block;
+  transition:transform .6s var(--ease);
+}
+.mc-img-wrap:hover img{transform:scale(1.04)}
+
 /* Numbered list style (core values) */
 .val-list{list-style:none;padding:0;display:grid;gap:var(--s-8)}
 .val-item{display:grid;grid-template-columns:3rem 1fr;gap:var(--s-4);align-items:start}
@@ -452,6 +529,39 @@ a:focus:not(:focus-visible),button:focus:not(:focus-visible){outline:none}
 .b-mobile  {grid-column:4;grid-row:2;background:var(--acc-50);border:1px solid var(--acc-100)}
 .b-meet    {grid-column:1/3;grid-row:3;background:var(--bg);border:1px solid var(--line)}
 .b-auto    {grid-column:3/5;grid-row:3;background:var(--pri-50);border:1px solid var(--pri-100)}
+
+/* Org tree diagram */
+.org-tree{
+  margin-top:var(--s-6);
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.org-node{
+  padding:.35rem .8rem;border-radius:var(--r-sm);
+  font:600 .75rem/1.3 var(--f-body);color:#fff;
+  text-align:center;position:relative;white-space:nowrap;
+}
+.org-node--sys{background:var(--pri-800)}
+.org-node--upper{background:var(--pri-700)}
+.org-node--org{background:var(--pri-600)}
+.org-node--single{background:var(--pri-500)}
+.org-node--teacher{background:var(--pri-400);color:var(--pri-900)}
+.org-node--student{background:var(--acc-500);color:#fff}
+
+.org-connector{
+  width:2px;height:16px;background:var(--pri-200);
+}
+.org-branch{
+  display:flex;align-items:flex-start;gap:var(--s-4);
+  position:relative;
+}
+.org-branch::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:calc(100% - 4rem);height:2px;background:var(--pri-200);
+}
+.org-branch-item{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.org-branch-item .org-connector{height:12px}
 
 /* Big number cell */
 .b-lang .big-num{
@@ -599,8 +709,21 @@ a:focus:not(:focus-visible),button:focus:not(:focus-visible){outline:none}
 .c-after{background:var(--surface);color:var(--text)}
 .c-after strong{color:var(--pri-700);font-weight:600}
 
-.compare-row:hover .c-before{text-decoration:line-through;opacity:.6}
-.compare-row:hover .c-after{background:var(--pri-50)}
+/* Row slide-in animation */
+.compare-row{
+  opacity:0;
+  transform:translateX(-20px);
+  transition:opacity .5s var(--ease-out),transform .5s var(--ease-out),background .2s;
+}
+.compare-table.is-visible .compare-row:nth-child(1){opacity:1;transform:none;transition-delay:.1s}
+.compare-table.is-visible .compare-row:nth-child(2){opacity:1;transform:none;transition-delay:.18s}
+.compare-table.is-visible .compare-row:nth-child(3){opacity:1;transform:none;transition-delay:.26s}
+.compare-table.is-visible .compare-row:nth-child(4){opacity:1;transform:none;transition-delay:.34s}
+.compare-table.is-visible .compare-row:nth-child(5){opacity:1;transform:none;transition-delay:.42s}
+.compare-table.is-visible .compare-row:nth-child(6){opacity:1;transform:none;transition-delay:.50s}
+
+.compare-row:hover .c-before{text-decoration:line-through;opacity:.5;transition:opacity .25s,text-decoration .25s}
+.compare-row:hover .c-after{background:var(--pri-50);padding-left:var(--s-8);transition:padding .3s var(--ease),background .2s}
 
 /* ═══════════════════════════════════════════════════════════
    Rollout — Arc Path
