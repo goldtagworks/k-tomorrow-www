@@ -48,7 +48,7 @@ k-tomorrow LMS 홍보 사이트 제작 하네스를 **모델 주도 오케스트
 
 | 요청 | 경로 | 호출 |
 |---|---|---|
-| 전체 빌드 | Workflow | `lms-build` (phases 전체) |
+| 전체 빌드 | Workflow | `lms-build` (빌드 3단계, QA 미포함) |
 | 부분 다단계 (디자인+프로덕션 등) | Workflow | `lms-build` (phases 일부) |
 | 품질 감사+수정 | Workflow | `lms-build` (`phases:['qa']`) |
 | 단일 산출물 국소 수정 | 직접 Agent | 해당 에이전트 1회 |
@@ -67,9 +67,9 @@ Phase 4 QA         : (trust-review ∥ design-audit ∥ accessibility-audit)
                      → (옵션) maxRevisions>0 일 때만 production-agent 수정 → 재감사 루프
 ```
 
-> **검증은 비례한다.** 단일 HTML 랜딩페이지에 감사→수정→재감사 다회 루프는 과하다.
-> 기본은 **1회 감사 + 리포트**. 수정이 필요하면 사용자가 `maxRevisions`로 명시 요청한다.
-> QA 단계 자체도 `phases`에서 빼면 건너뛴다.
+> **QA(검증)는 기본 phases 에서 빠져 있다.** 빌드 기본값은 `['strategy','design','production']` 뿐.
+> 사용자가 "감사해줘"라고 명시할 때만 `phases` 에 `'qa'` 를 넣고, 그때도 기본은 1회 감사+리포트(`maxRevisions: 0`).
+> 수정 루프는 "고쳐줘"까지 명시할 때만.
 
 - **구조화 출력**: 전략·디자인·프로덕션 단계는 `DOC_SCHEMA`(artifact/status/summary/handoff/issues), QA는 `AUDIT_SCHEMA`(severity/category/description/fix + score)로 강제.
 - **컨텍스트 전달**: 각 단계는 선행 단계의 `handoff` 문자열을 프롬프트로 받아 신선한 서브에이전트에 문맥을 주입한다.
@@ -80,9 +80,9 @@ Phase 4 QA         : (trust-review ∥ design-audit ∥ accessibility-audit)
 
 ```js
 {
-  phases: ['strategy','design','production','qa'],  // 실행 단계, 기본 전체
+  phases: ['strategy','design','production'],       // 실행 단계, 기본은 빌드 3단계(QA 미포함)
   context: '<프로젝트 맥락>',                          // 기본값 내장
-  maxRevisions: 0                                    // QA 수정 루프 상한, 기본 0(1회 감사·리포트만)
+  maxRevisions: 0                                    // QA 가 돌 때만 적용, 기본 0(1회 감사·리포트만)
 }
 ```
 

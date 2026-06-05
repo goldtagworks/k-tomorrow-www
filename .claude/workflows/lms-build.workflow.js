@@ -12,13 +12,12 @@ export const meta = {
 
 // ─────────────────────────────────────────────────────────────
 // args 로 단계 선택 (라우터가 의도 판별 후 주입)
-//   args.phases : 실행할 단계 배열, 기본 전체
+//   args.phases : 실행할 단계 배열. 기본은 빌드 3단계뿐 — QA 미포함.
+//                 검증(qa)은 사용자가 "감사해줘"라고 명시할 때만 phases 에 넣는다.
 //   args.context: 프로젝트 맥락 문자열
-//   args.maxRevisions: QA 수정 루프 상한, 기본 0(리포트만, 자동 수정 루프 없음)
-//                      단일 HTML 랜딩페이지에 감사→수정→재감사 다회 루프는 과하므로
-//                      기본은 1회 감사 후 이슈 리포트만. 수정이 필요하면 사용자가 명시 요청.
+//   args.maxRevisions: QA 가 돌 때의 수정 루프 상한, 기본 0(리포트만, 자동 수정 없음)
 // ─────────────────────────────────────────────────────────────
-const RUN = (args && args.phases) || ['strategy', 'design', 'production', 'qa']
+const RUN = (args && args.phases) || ['strategy', 'design', 'production']
 const CONTEXT = (args && args.context) || 'k-tomorrow LMS(다중 기관·접근성 강화 학습 관리 시스템) 공공기관 대상 홍보 랜딩페이지 전체 빌드'
 const MAX_REV = (args && args.maxRevisions) != null ? args.maxRevisions : 0
 
