@@ -1,216 +1,134 @@
 ---
 name: lms-web-orchestrator
-description: "k-tomorrow LMS 홍보 사이트 에이전트 팀 오케스트레이터. strategy-agent, design-agent, production-agent, quality-agent를 조율하여 공공기관 대상 LMS 랜딩페이지를 제작한다. 'LMS 사이트 만들어줘', '랜딩페이지 제작', '홍보 사이트 시작', '팀 실행', '워크플로우 시작' 요청 시 사용."
+description: "k-tomorrow LMS 홍보 사이트 하이브리드 오케스트레이터(라우터). 2단계 이상이 엮이는 다단계 빌드를 결정적 Workflow 엔진(lms-build)으로 라우팅한다. 'LMS 사이트 만들어줘', '랜딩페이지 제작', '홍보 사이트 시작', '팀 전체 실행', '전략부터 HTML까지', '만들고 품질까지 감사' 등 여러 단계를 묶는 요청에만 사용. 단일 산출물 국소 수정(카피 한 줄·토큰 하나·오타)은 이 스킬을 거치지 말고 해당 에이전트(production/design/quality/strategy-agent) 또는 직접 편집으로 처리하라."
 ---
 
-# k-tomorrow LMS Web Orchestrator
+# k-tomorrow LMS Web Orchestrator — 하이브리드 라우터
 
-k-tomorrow LMS 홍보 사이트의 에이전트 팀을 조율하여 공공기관 대상 접근성 강화 랜딩페이지를 제작한다.
+이 스킬은 **라우터**다. 직접 단계를 일일이 호출하지 않는다.
+요청 의도를 판별해 **결정적 실행이 유리한 작업은 Workflow 엔진**(`lms-build`)에 위임하고,
+**유연성·대화가 필요한 작업은 직접 Agent 호출**로 처리한다.
 
-## 팀 구성
+> 하이브리드 설계 원칙·근거는 [docs/hybrid-workflow.md](../../../docs/hybrid-workflow.md) 참조.
 
-| 에이전트 | 역할 | 사용 스킬 | 호출 조건 |
-|---------|------|----------|----------|
-| `strategy-agent` | 리서치 & 전략 총괄 | `site-research`, `creative-direction`, `ux-strategy`, `conversion-optimization` | 항상 (Phase 1) |
-| `design-agent` | 디자인 시스템 & 비주얼 | `design-system`, `visual-design`, `component-architecture` | 항상 (Phase 2) |
-| `production-agent` | 카피 & HTML & 성능 | `korean-copywriting`, `html-development`, `performance-optimization` | 항상 (Phase 3) |
-| `quality-agent` | 신뢰성 & 디자인 & 접근성 감사 | `trust-review`, `design-audit`, `accessibility-audit` | 항상 (Phase 4) |
+## 진입 조건 (중요)
 
-## 실행 워크플로우
+**이 라우터는 다단계 작업 전용이다.** 단일 산출물 국소 수정은 애초에 이 스킬로 들어오면 안 된다.
+간단한 수정에 오케스트레이터 → (심지어) 워크플로우 전체를 도는 것은 낭비다.
 
-### Phase 1: Strategy & Research (파이프라인 + 팬아웃)
+호출 비용 순으로 **4티어**가 있고, 가장 싼 경로를 우선한다:
 
-실행 방식: 순차 → 병렬 → 순차
-에이전트: `strategy-agent`
+| 티어 | 경로 | 비용 | 적용 |
+|---|---|---|---|
+| **T1 인라인** | 메인 루프가 직접 Edit (스킬·에이전트 없음) | 서브에이전트 0 | 오타·문구 한 줄·색상값 하나 등 **전문 방법론 불필요한 기계적 수정** |
+| **T2 직접 에이전트** | 에이전트 description 직접 매칭 → Agent 1회 | 서브에이전트 1 | 카피 톤·접근성·디자인 토큰 등 **스킬 방법론이 필요한 단일 산출물 수정** |
+| **T3 라우터(이 스킬)** | 의도 판별 → 경로 선택 | 스킬 로드 + 판단 | **다단계이거나 어느 단계인지 모호**할 때만 |
+| **T4 워크플로우** | T3 → `lms-build` | 서브에이전트 다수 | 2단계 이상 빌드 |
 
-**Step 1**: `site-research` 실행
-- 기존 벤치마크 데이터 확인 (docs/benchmark-report.md)
-- 없거나 업데이트 필요 시: 공공기관/LMS 사이트 벤치마킹 수행
-- 산출물: docs/benchmark-report.md
+**T1·T2는 이 라우터를 우회하는 것이 정상이다.** production/design/quality/strategy-agent는 각자 트리거 description을 가지므로, "카피만 수정"·"토큰만 수정"·"접근성만 점검"은 해당 에이전트로 직행한다.
 
-**Step 2**: `creative-direction` + `ux-strategy` 병렬 실행
-- creative-direction: Horizon 팔레트 기반 크리에이티브 브리프 작성
-- ux-strategy: 접근성 퍼스트 페이지 구조 설계
-- 산출물: docs/creative-brief.md, docs/ux-strategy.md
+## 1단계: 의도 판별 (라우터에 도달한 경우)
 
-**Step 3**: `conversion-optimization` 실행
-- B2G 전환 퍼널 + CTA 전략 확정
-- 산출물: docs/conversion-strategy.md
+라우터까지 왔다는 것은 보통 다단계이거나 모호한 요청이다. 다음으로 분기한다:
 
-완료 조건: 4개 전략 문서 모두 생성됨
+| 사용자 요청 패턴 | 실행 경로 | 호출 |
+|---|---|---|
+| "LMS 사이트 만들어줘" / "팀 전체 실행" / "처음부터 다시" | **T4 Workflow** (전체) | `lms-build`, `args.phases=['strategy','design','production','qa']` |
+| "전략부터 디자인·HTML까지" / "디자인하고 만들어줘"(전략 산출물 有) | **T4 Workflow** (부분 다단계) | `lms-build`, `args.phases` 해당 구간 |
+| "만들고 품질까지 감사해줘" / "감사하고 고쳐줘"(다단계) | **T4 Workflow** (QA 포함) | `lms-build`, QA 단계 포함 |
+| 어느 에이전트가 맞는지 모호한 단일 수정 | **T2로 강등** | 적합 에이전트 1회 호출 |
+| 다단계인 줄 알았으나 실제 단일 수정으로 판명 | **T1/T2로 강등** | 직접 편집 또는 Agent 1회 |
 
-### Phase 2: Design System (팬아웃 + 파이프라인)
+**판별 한 줄**: 2개 이상 단계가 순차·병렬로 엮이거나 수정 루프(결정적 카운터)가 필요하면 → **T4 Workflow**.
+그 외에는 가능한 가장 싼 티어로 **강등(de-escalate)** 한다. 라우터에 왔어도 단일 수정이면 워크플로우를 돌리지 않는다.
 
-실행 방식: 병렬 → 순차
-에이전트: `design-agent`
-의존: Phase 1 완료
+## 비례 검증 원칙 (수정 범위 = 검증 범위)
 
-전달 데이터:
-- Phase 1의 creative-brief → design-agent
-- Phase 1의 ux-strategy (페이지 구조 맵) → design-agent
-- Phase 1의 benchmark-report (디자인 인사이트) → design-agent
+**문구 한 줄 수정에 빌드→전체 감사(QA 워크플로우)를 도는 것은 금지.** 검증 강도는 수정 범위에 비례한다.
 
-**Step 1**: `design-system` + `visual-design` 병렬 실행
-- design-system: CSS 변수 기반 디자인 토큰 + 시니어 모드 토큰 정의
-- visual-design: 색상 팔레트, 타이포, 레이아웃, 아크 모티프 설계
-- 산출물: docs/design-tokens.md, docs/visual-design.md
+| 수정 범위 | 적정 검증 | 금지(과잉) |
+|---|---|---|
+| 텍스트 한 줄·오타 (T1) | 바뀐 문자열 육안 확인. 검증 단계 없음 | QA 워크플로우, 전체 재빌드, Lighthouse 재측정 |
+| 단일 산출물 수정 (T2) | 그 산출물에 한정된 **단일 감사 1회**(예: 카피 톤만, 접근성만) | `phases:['qa']` 3종 병렬 감사 풀세트 |
+| 다단계 빌드 (T4) | `lms-build`의 QA 단계 풀 감사 + 수정 루프 | — (여기서만 풀 검증이 정당) |
 
-**Step 2**: `component-architecture` 실행
-- design-system + visual-design 결과를 통합하여 컴포넌트 스펙 정의
-- 산출물: docs/component-specs.md
+규칙:
+- T1 수정은 **검증 에이전트를 호출하지 않는다.** 영향이 한 줄에 갇혀 있으면 눈으로 확인하고 끝낸다.
+- T2 수정에 검증이 필요하면, 바뀐 차원에 해당하는 **단일 스킬 1회만**(예: 카피 수정 → `trust-review`나 `accessibility-audit` 중 관련된 하나) 돌린다. 3종 풀 감사로 승격하지 않는다.
+- **풀 QA 감사·Lighthouse 재측정·수정 루프는 오직 T4(다단계 빌드)에서만** 정당하다.
+- 의심스러우면 과소 검증을 택하고 사용자에게 "추가 감사 필요하면 말해달라"고 안내한다. 자동으로 풀 파이프라인을 돌리지 않는다.
 
-완료 조건: 3개 디자인 문서 모두 생성됨
+## 2단계-A: Workflow 경로 (다단계 빌드)
 
-### Phase 3: Production (파이프라인)
+결정적 실행이 필요한 다단계 작업은 `lms-build` 워크플로우로 위임한다.
+이 경로의 장점: 단계 누락 불가, 병렬 배리어 정확, **QA 수정 루프가 실제 `while` 카운터**(최대 2회)로 보장, 구조화 출력(스키마) 강제.
 
-실행 방식: 순차
-에이전트: `production-agent`
-의존: Phase 1 + Phase 2 완료
-
-전달 데이터:
-- Phase 1의 conversion-strategy → korean-copywriting
-- Phase 1의 creative-brief + ux-strategy → korean-copywriting
-- Phase 2의 component-specs + design-tokens → html-development
-
-**Step 1**: `korean-copywriting` 실행
-- 공공기관 톤앤매너 섹션별 카피 작성
-- 산출물: docs/copy-content.md
-
-**Step 2**: `html-development` 실행
-- 카피 + 디자인 스펙 기반 단일 HTML 파일 구현
-- 산출물: index.html
-
-**Step 3**: `performance-optimization` 실행
-- Lighthouse 감사 + 성능/접근성 최적화
-- 산출물: 최적화된 index.html + docs/lighthouse-report.md
-
-완료 조건: index.html 생성 + Lighthouse 점수 보고
-
-### Phase 4: Quality Assurance (팬아웃 + 생성-검증 루프)
-
-실행 방식: 병렬 → 수정 루프
-에이전트: `quality-agent` ↔ `production-agent`
-의존: Phase 3 완료
-
-전달 데이터:
-- Phase 3의 index.html → quality-agent
-
-**Step 1**: 3개 감사 병렬 실행
-- `trust-review`: 공공기관 신뢰성 검증
-- `design-audit`: AI 안티패턴 + 디자인 품질 감사
-- `accessibility-audit`: WCAG 2.2 AA + 시니어 모드 검증
-- 산출물: docs/trust-review-report.md, docs/design-audit-report.md, docs/accessibility-audit-report.md
-
-**Step 2**: 감사 결과 통합 → 수정 필요 여부 판단
-- P0/P1 이슈가 있으면: production-agent에 수정 지시서 전달
-- P0/P1 이슈가 없으면: 최종 승인
-
-**Step 3** (조건부): 수정 루프 (최대 2회)
-- production-agent가 수정 지시 기반으로 index.html 수정
-- quality-agent가 수정된 HTML 재감사
-- 2회 초과 시: 잔여 이슈와 함께 사용자에게 보고
-
-완료 조건: 모든 P0/P1 이슈 해소 또는 2회 루프 완료
-
-## 데이터 흐름도
-
+호출 예:
 ```
-[strategy(site-research)]           ──{벤치마크 리포트}──────→  [strategy(creative-direction)]
-                                                              + [strategy(ux-strategy)]        [병렬]
-[strategy(creative-direction)]      ──{크리에이티브 브리프}──→  [strategy(conversion-optimization)]
-[strategy(ux-strategy)]             ──{페이지 구조}─────────→  [strategy(conversion-optimization)]
-[strategy(conversion-optimization)] ──{전환 퍼널}──────────→  [production(korean-copywriting)]
-
-[strategy 전체 산출물]              ──{전략 브리프}─────────→  [design(design-system)]
-                                                              + [design(visual-design)]         [병렬]
-[design(design-system)]             ──{디자인 토큰}────────→  [design(component-architecture)]
-[design(visual-design)]             ──{비주얼 시스템}───────→  [design(component-architecture)]
-[design(component-architecture)]    ──{컴포넌트 스펙}───────→  [production(html-development)]
-
-[production(korean-copywriting)]    ──{섹션별 카피}────────→  [production(html-development)]
-[production(html-development)]      ──{완성 HTML}─────────→  [production(performance-optimization)]
-[production(performance-optimization)] ──{최적화 HTML}──────→  [quality(trust-review)]
-                                                              + [quality(design-audit)]          [병렬]
-                                                              + [quality(accessibility-audit)]
-
-[quality 감사 통합]                 ──{수정 지시서}────────→  [production-agent] (수정 루프, 최대 2회)
-[quality 최종 승인]                 ──{승인 리포트}────────→  사용자
+Workflow({
+  name: 'lms-build',
+  args: { phases: ['strategy','design','production','qa'], context: '<사용자 맥락>', maxRevisions: 0 }
+})
 ```
 
-## 시나리오별 실행 구성
+QA 기본은 **1회 감사 + 이슈 리포트만**(`maxRevisions: 0`). 단일 HTML 페이지에 감사→수정→재감사 다회 루프는 과하다. 사용자가 "감사 결과대로 고쳐줘"라고 명시할 때만 `maxRevisions`를 1~2로 올린다. 감사 자체가 불필요하면 `phases`에서 `'qa'`를 뺀다.
 
-### 전체 실행
-모든 Phase를 순서대로 실행. 기본 모드.
-```
-사용자: "LMS 홍보 사이트 만들어줘" / "팀 전체 실행"
-→ Phase 1 → Phase 2 → Phase 3 → Phase 4
-```
+부분 실행 — 선행 산출물이 이미 존재할 때 그 단계는 생략하고 `phases`만 좁힌다.
+- 전략 산출물(docs/creative-brief.md 등) 존재 → `phases: ['design','production','qa']`
+- index.html 존재, 감사만 → `phases: ['qa']`
 
-### 전략만 실행
-Phase 1만 실행. 전략 문서만 필요할 때.
-```
-사용자: "전략만 먼저 세워줘" / "벤치마킹하고 브리프 작성해줘"
-→ Phase 1만 실행
-```
+Workflow는 백그라운드 실행되며 완료 시 알림이 온다. 진행은 `/workflows`로 관찰한다.
+완료 후 반환된 status 맵 + QA 결과(`approved`, `revisions`, `remainingBlocking`)를 사용자에게 요약 보고한다.
 
-### 디자인 + 프로덕션 실행
-Phase 1 산출물이 이미 존재할 때, Phase 2~3만 실행.
+## 2단계-B: 직접 Agent 경로 (단일 수정·대화)
+
+국소 수정·대화형 요청은 Workflow를 거치지 않고 해당 에이전트를 직접 호출한다.
+
 ```
-사용자: "디자인하고 HTML 만들어줘"
-→ docs/creative-brief.md, docs/ux-strategy.md 존재 확인 → Phase 2 → Phase 3
+"카피만 다시 써줘"      → Agent(production-agent, "korean-copywriting 적용해 <대상> 카피 수정")
+"디자인 토큰만 수정"    → Agent(design-agent, "design-system 적용해 docs/design-tokens.md 수정")
+"접근성만 점검"         → Agent(quality-agent, "accessibility-audit 적용해 index.html 점검")
+"전환 퍼널 다시 짜줘"   → Agent(strategy-agent, "conversion-optimization 적용")
 ```
 
-### 품질 감사만 실행
-Phase 3 산출물(index.html)이 이미 존재할 때, Phase 4만 실행.
+이 경로는 빠르고 대화 문맥을 유지한다. 다만 단계 간 의존이 생기면 즉시 Workflow 경로로 승격한다.
+
+## 팀 구성 (양 경로 공통 자산)
+
+| 에이전트 | 역할 | 사용 스킬 |
+|---------|------|----------|
+| `strategy-agent` | 리서치 & 전략 | `site-research`, `creative-direction`, `ux-strategy`, `conversion-optimization` |
+| `design-agent` | 디자인 시스템 & 비주얼 | `design-system`, `visual-design`, `component-architecture` |
+| `production-agent` | 카피 & HTML & 성능 | `korean-copywriting`, `html-development`, `performance-optimization` |
+| `quality-agent` | 신뢰성·디자인·접근성 감사 | `trust-review`, `design-audit`, `accessibility-audit` |
+
+Workflow 엔진은 이 에이전트들을 `agentType`으로 그대로 재사용하고, 각 에이전트는 지정된 스킬의 `SKILL.md` 방법론을 적용한다. **에이전트·스킬 정의는 단일 진실 공급원(single source of truth)이며 두 경로가 공유한다.**
+
+## 데이터 흐름 (Workflow 엔진 내부, 결정적)
+
 ```
-사용자: "품질 검사해줘" / "접근성 감사해줘" / "신뢰성 검증해줘"
-→ index.html 존재 확인 → Phase 4
+Phase 1 Strategy : site-research → (creative-direction ∥ ux-strategy) → conversion-optimization
+Phase 2 Design   : (design-system ∥ visual-design) → component-architecture
+Phase 3 Production: korean-copywriting → html-development → performance-optimization
+Phase 4 QA       : (trust-review ∥ design-audit ∥ accessibility-audit)
+                   → P0/P1 집계 → [있으면] production-agent 수정 → 재감사  (while, 최대 2회)
+                   → 최종 승인 / 잔여 이슈 보고
 ```
 
-### 단일 에이전트 실행
-특정 에이전트만 직접 호출. 오케스트레이터를 거치지 않음.
-```
-사용자: "카피만 다시 작성해줘" → production-agent(korean-copywriting)
-사용자: "디자인 토큰 수정해줘" → design-agent(design-system)
-```
+## 에러 핸들링 (라우터 책임)
 
-## 에러 핸들링
+| 상황 | 대응 |
+|------|------|
+| Workflow 중간 단계 status=failed | 반환 status 맵 확인 → 해당 단계만 `phases`로 좁혀 재실행 |
+| QA 수정 루프 2회 초과(remainingBlocking>0) | 잔여 P0/P1 목록과 함께 사용자에게 보고, 수동 개입 요청 |
+| 선행 산출물 누락으로 부분 실행 실패 | 누락 단계를 `phases`에 포함해 재실행 |
+| 단일 Agent 수정이 다른 산출물에 연쇄 영향 | Workflow 경로로 승격(영향 단계 포함) |
+| 토큰 한계로 HTML 미완성 | `phases: ['production']` 재실행 또는 production-agent 직접 호출로 이어서 구현 |
 
-| 상황 | 대응 전략 |
-|------|----------|
-| 에이전트가 "failed" 반환 | 동일 에이전트 1회 재시도. 재실패 시 사용자에게 보고 |
-| 에이전트가 "needs_review" 반환 | issues를 해당 에이전트에 전달하여 수정 요청 (최대 2회) |
-| Phase 간 산출물 누락 | 누락된 산출물의 원인 Phase를 재실행 |
-| quality-agent 수정 루프 2회 초과 | 잔여 이슈 목록과 함께 사용자에게 보고, 수동 개입 요청 |
-| 토큰 한계로 HTML 미완성 | `[PAUSED]` 지점부터 이어서 구현 (html-development 재호출) |
-| 벤치마크 데이터 오래됨 | site-research 재실행 또는 기존 데이터 활용 여부 사용자에게 확인 |
+## 최종 보고 형식
 
-## 최종 산출물
-
-오케스트레이터가 모든 Phase 완료 후 사용자에게 제공:
-
-### 전략 문서 (Phase 1)
-- `docs/benchmark-report.md` — LMS/공공기관 벤치마킹 분석
-- `docs/creative-brief.md` — 크리에이티브 브리프
-- `docs/ux-strategy.md` — UX 전략 (페이지 구조, 유저 플로우)
-- `docs/conversion-strategy.md` — B2G 전환 전략
-
-### 디자인 문서 (Phase 2)
-- `docs/design-tokens.md` — CSS 변수 기반 디자인 토큰
-- `docs/visual-design.md` — 비주얼 디자인 시스템
-- `docs/component-specs.md` — 컴포넌트 스펙시트
-
-### 프로덕션 산출물 (Phase 3)
-- `docs/copy-content.md` — 섹션별 한국어 카피
-- `index.html` — 완성된 랜딩페이지
-- `docs/lighthouse-report.md` — 성능/접근성 보고서
-
-### 감사 리포트 (Phase 4)
-- `docs/trust-review-report.md` — 신뢰성 감사
-- `docs/design-audit-report.md` — 디자인 감사
-- `docs/accessibility-audit-report.md` — 접근성 감사
-
-### 실행 요약
-- 각 에이전트의 status
-- 발견된 issues 총합
-- 최종 점수: 신뢰성 / 디자인 품질 / 접근성
+빌드 완료 후 사용자에게:
+- **실행 경로**: Workflow(lms-build) / 직접 Agent
+- **단계별 status**: strategy/design/production 각 산출물 success 여부
+- **QA 결과**: approved 여부, 수정 루프 횟수(revisions), 잔여 P0/P1(remainingBlocking), 점수(신뢰성/접근성/디자인)
+- **산출물 경로**: docs/* 전략·디자인·감사 문서 + index.html + docs/lighthouse-report.md
